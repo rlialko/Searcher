@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,6 @@ fun RepoDetailScreen(
 ) {
     val state: RepoDetailState by viewModel.state.collectAsStateWithLifecycle()
 
-    viewModel.loadDetail(name, ownerLogin)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -32,15 +32,27 @@ fun RepoDetailScreen(
     ) {
         Column {
 
+
             Text(
-                text = name ?: "nothing",
+                text = name ?: "",
                 Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = ownerLogin ?: "nothing",
-                Modifier.fillMaxWidth()
+            Button(
+                onClick = {
+                    viewModel.loadDetail(
+                        name = name,
+                        ownerLogin = ownerLogin
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Click to load more detail")
+            }
 
+            Text(
+                text = state.repoDetail.description,
+                Modifier.fillMaxWidth()
             )
         }
         if (state.isLoading) {
