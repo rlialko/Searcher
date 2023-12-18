@@ -33,7 +33,7 @@ fun RepoListItem(
         )
 
         Text(
-            text = repoItem.stars.toString(),
+            text = repoItem.getStarsFormatted(),
             modifier = Modifier.width(60.dp)
         )
     }
