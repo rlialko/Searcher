@@ -54,6 +54,11 @@ fun RepoDetailScreen(
                 text = state.repoDetail.description,
                 Modifier.fillMaxWidth()
             )
+            Text(
+                text = state.repoDetail.createdAt,
+                Modifier.fillMaxWidth()
+            )
+
         }
         if (state.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

@@ -1,7 +1,6 @@
 package com.ruslanlialko.searcher.data.dto
 
 import com.ruslanlialko.searcher.domain.model.RepoDetail
-import com.ruslanlialko.searcher.domain.model.Repos
 
 data class RepoDetailDto(
     val allow_auto_merge: Boolean,
@@ -96,5 +95,11 @@ data class RepoDetailDto(
 )
 
 fun RepoDetailDto.toRepoDetail(): RepoDetail {
-    return RepoDetail(name = name, description = description)
+    return RepoDetail(
+        name = name,
+        description = description,
+        createdAt = created_at,
+        openIssuesCount = open_issues_count,
+        stars = stargazers_count
+    )
 }
