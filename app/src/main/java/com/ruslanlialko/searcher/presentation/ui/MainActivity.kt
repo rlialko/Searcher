@@ -36,23 +36,19 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.ReposList.route) {
                             ReposListScreen(navController = navController)
                         }
-                        composable(route = Screen.RepoDetail.route + "/{name}/{ownerLogin}",
+                        composable(route = Screen.RepoDetail.route + "/{$DETAIL_ARGUMENT_NAME}/{$DETAIL_ARGUMENT_OWNER_LOGIN}",
                             arguments = listOf(
-                                navArgument("name") {
+                                navArgument(DETAIL_ARGUMENT_NAME) {
                                     type = NavType.StringType
-                                    defaultValue = ""
-                                    nullable = false
                                 },
-                                navArgument("ownerLogin") {
+                                navArgument(DETAIL_ARGUMENT_OWNER_LOGIN) {
                                     type = NavType.StringType
-                                    defaultValue = ""
-                                    nullable = false
                                 }
                             )
                         ) { entry ->
                             RepoDetailScreen(
-                                name = entry.arguments?.getString("name"),
-                                ownerLogin = entry.arguments?.getString("ownerLogin"),
+                                name = entry.arguments?.getString(DETAIL_ARGUMENT_NAME),
+                                ownerLogin = entry.arguments?.getString(DETAIL_ARGUMENT_OWNER_LOGIN),
                             )
                         }
                     }

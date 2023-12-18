@@ -1,5 +1,7 @@
 package com.ruslanlialko.searcher.presentation.repos_list
 
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -19,14 +20,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.ruslanlialko.searcher.R
-import com.ruslanlialko.searcher.domain.exception.NoInternetException
-import com.ruslanlialko.searcher.domain.exception.TooManyRequestsException
 import com.ruslanlialko.searcher.presentation.repos_list.components.RepoListItem
 import com.ruslanlialko.searcher.presentation.ui.Screen
 
@@ -37,44 +39,25 @@ fun ReposListScreen(
     navController: NavController,
     viewModel: ReposListViewModel = hiltViewModel()
 ) {
-    val state: ReposListState by viewModel.state.collectAsStateWithLifecycle()
-    var inputText by rememberSaveable { mutableStateOf("") }
-
+    var searchText by rememberSaveable { mutableStateOf("") }
+    val repoItems = viewModel.getRepos(searchText).collectAsLazyPagingItems()
+    val ctx = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         Column {
             TextField(
-                value = inputText,
+                value = searchText,
                 onValueChange = {
-                    inputText = it
-                    viewModel.search(inputText)
+                    searchText = it
+                    //viewModel.search(inputText)
                 },
                 singleLine = true,
                 label = { Text(text = stringResource(id = R.string.search_label)) },
-                isError = state.error != null,
-                supportingText = {
-                    state.error?.let {
-                        Text(
-                            text = when (state.error) {
-                                is TooManyRequestsException -> stringResource(id = R.string.many_requests_error)
-                                is NoInternetException -> stringResource(id = R.string.no_internet_error)
-                                else -> stringResource(id = R.string.general_error)
-                            },
-                            Modifier.fillMaxWidth()
-                        )
-                    }
-                    if (!state.isInputValid) {
-                        Text(
-                            text = stringResource(id = R.string.validation_error),
-                            Modifier.fillMaxWidth()
-                        )
-                    }
-                },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             )
 
             LazyColumn(
@@ -82,7 +65,11 @@ fun ReposListScreen(
                     .fillMaxWidth()
                     .padding(PaddingValues(top = 16.dp))
             ) {
-                items(state.repos) { repo ->
+                items(
+                    count = repoItems.itemCount,
+                    key = { it }
+                ) {
+                    val repo = repoItems[it]!!
                     RepoListItem(repoItem = repo) {
                         navController.navigate(
                             Screen.RepoDetail.withArgs(
@@ -92,10 +79,49 @@ fun ReposListScreen(
                         )
                     }
                 }
+                when (repoItems.loadState.refresh) { //FIRST LOAD
+                    is LoadState.Error -> {
+                        Toast.makeText(ctx, R.string.many_requests_error, Toast.LENGTH_LONG).show()
+                    }
+
+                    is LoadState.Loading -> { // Loading UI
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillParentMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                CircularProgressIndicator(color = Color.Black)
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
+
+                when (repoItems.loadState.append) { // Pagination
+                    is LoadState.Error -> {
+                        Toast.makeText(ctx, R.string.many_requests_error, Toast.LENGTH_LONG).show()
+                    }
+
+                    is LoadState.Loading -> { // Pagination Loading UI
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                CircularProgressIndicator(color = Color.Black)
+                            }
+                        }
+                    }
+
+                    else -> {}
+
+                }
             }
-        }
-        if (state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
 }
