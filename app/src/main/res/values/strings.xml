@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">RepoSearcher</string>
+    <string name="app_name">Searcher</string>
+    <string name="search_label">Search</string>
+    <string name="validation_error">Enter at least 3 characters</string>
+    <string name="many_requests_error">Too many requests, please try again later</string>
+    <string name="no_internet_error">Could not reach the server. Check your internet connection</string>
+    <string name="general_error">Something went wrong</string>
 </resources>

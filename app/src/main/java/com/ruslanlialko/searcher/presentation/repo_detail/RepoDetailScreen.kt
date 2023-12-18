@@ -47,7 +47,7 @@ fun RepoDetailScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Click to load more detail")
+                Text(text = "Load more detail")
             }
 
             Text(
