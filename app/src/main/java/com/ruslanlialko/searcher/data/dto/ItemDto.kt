@@ -86,6 +86,10 @@ fun ItemDto.toRepoItem(): RepoItem {
     return RepoItem(
         name = name,
         description = description,
-        ownerLogin = owner.login
+        ownerLogin = owner.login,
+        language = language,
+        createdAt = created_at,
+        openIssuesCount = open_issues_count,
+        stars = stargazers_count
     )
 }
