@@ -15,10 +15,10 @@ interface GitHubApi {
         @Query("per_page") perPage: Int
     ): ReposDto
 
-    @GET("/repos/{owner}/{repo}}")
+    @GET("/repos/{owner}/{repo}")
     suspend fun getRepoDetail(
-        @Path("owner") query: String,
-        @Path("repo") page: String,
+        @Path("owner") owner: String,
+        @Path("repo") repo: String,
     ): RepoDetailDto
 
 }
